@@ -74,7 +74,7 @@ jobs:
         cd apk-project
         mkdir -p www
         
-    - name: Create complete medical system
+    - name: Create complete medical system HTML
       run: |
         cd apk-project
         cat > www/index.html << 'EOF'
@@ -868,6 +868,22 @@ jobs:
             </script>
         </body>
         </html>
+        EOF
+        
+    - name: Create Capacitor config with JavaScript
+      run: |
+        cd apk-project
+        cat > capacitor.config.js << 'EOF'
+        const config = {
+          appId: 'com.medico.prontuario',
+          appName: 'Prontuario Geriatrico',
+          webDir: 'www',
+          server: {
+            androidScheme: 'https'
+          }
+        };
+
+        module.exports = config;
         EOF
         
     - name: Add Android platform
