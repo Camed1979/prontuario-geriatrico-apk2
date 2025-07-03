@@ -1,4 +1,4 @@
-name: Build APK Completo - Prontuário Geriátrico
+name: Build APK Completo - Prontuário Geriátrico (CORRIGIDO)
 
 on:
   push:
@@ -30,12 +30,12 @@ jobs:
     - name: Accept licenses
       run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
       
-    - name: Create Capacitor project
+    - name: Create Capacitor project with TypeScript
       run: |
         mkdir apk-project
         cd apk-project
         npm init -y
-        npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/preferences @capacitor/network
+        npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/preferences @capacitor/network typescript
         
     - name: Initialize Capacitor
       run: |
@@ -227,7 +227,7 @@ jobs:
                     <h1>Prontuário Geriátrico</h1>
                     <div class="status">✅ APK Gerado com Sucesso!</div>
                     <div class="build-info">
-                        🚀 Build ID: GitHub Actions<br>
+                        🚀 Build: GitHub Actions CORRIGIDO<br>
                         📱 Versão: 2.0.0<br>
                         ⚡ Sistema Médico Completo
                     </div>
@@ -260,7 +260,7 @@ jobs:
                         </div>
                     </div>
                     
-                    <div class="version">Prontuário Geriátrico v2.0.0 - APK Final</div>
+                    <div class="version">Prontuário Geriátrico v2.0.0 - APK CORRIGIDO</div>
                 </div>
 
                 <div id="dashboard" class="dashboard">
@@ -361,11 +361,11 @@ jobs:
         </html>
         EOF
         
-    - name: Create capacitor.config.ts
+    - name: Create capacitor.config.ts with proper TypeScript
       run: |
         cd apk-project
         cat > capacitor.config.ts << 'EOF'
-        import { CapacitorConfig } from '@capacitor/cli';
+        import type { CapacitorConfig } from '@capacitor/cli';
 
         const config: CapacitorConfig = {
           appId: 'com.medico.prontuario',
@@ -382,6 +382,35 @@ jobs:
         };
 
         export default config;
+        EOF
+        
+    - name: Create tsconfig.json
+      run: |
+        cd apk-project
+        cat > tsconfig.json << 'EOF'
+        {
+          "compilerOptions": {
+            "allowJs": true,
+            "allowSyntheticDefaultImports": true,
+            "declaration": false,
+            "experimentalDecorators": true,
+            "lib": [
+              "dom",
+              "dom.iterable",
+              "es6"
+            ],
+            "module": "esnext",
+            "moduleResolution": "node",
+            "noEmit": true,
+            "skipLibCheck": true,
+            "strict": true,
+            "target": "es5"
+          },
+          "include": [
+            "src",
+            "capacitor.config.ts"
+          ]
+        }
         EOF
         
     - name: Add Android platform
@@ -420,19 +449,25 @@ jobs:
       run: |
         mkdir apk-final
         BUILD_TIME=$(date +%Y%m%d_%H%M)
-        APK_NAME="ProntuarioGeriatrico_v2.0.0_${BUILD_TIME}.apk"
+        APK_NAME="ProntuarioGeriatrico_v2.0.0_CORRIGIDO_${BUILD_TIME}.apk"
         cp apk-project/android/app/build/outputs/apk/debug/app-debug.apk "apk-final/${APK_NAME}"
         
         # Create build info
         cat > apk-final/BUILD_INFO.txt << EOF
         ====================================
-        PRONTUÁRIO GERIÁTRICO - APK BUILD
+        PRONTUÁRIO GERIÁTRICO - APK BUILD CORRIGIDO
         ====================================
         
         📱 App: Prontuário Geriátrico v2.0.0
         🕐 Build: ${BUILD_TIME}
         🤖 Platform: Android (API 24+)
         📦 APK: ${APK_NAME}
+        
+        ✅ CORREÇÕES APLICADAS:
+        • TypeScript instalado e configurado
+        • tsconfig.json adicionado
+        • Capacitor config com tipos corretos
+        • Build limpo sem erros
         
         ✅ FUNCIONALIDADES INCLUÍDAS:
         • Sistema de login médico
@@ -462,6 +497,6 @@ jobs:
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Prontuario-Geriatrico-APK
+        name: Prontuario-Geriatrico-APK-CORRIGIDO
         path: apk-final/
         retention-days: 30
