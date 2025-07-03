@@ -38,10 +38,14 @@ jobs:
         cd apk-project
         npm init -y
         
-    - name: Install dependencies WITH TypeScript
+    - name: Install TypeScript FIRST
       run: |
         cd apk-project
         npm install --save-dev typescript
+        
+    - name: Install Capacitor dependencies
+      run: |
+        cd apk-project
         npm install @capacitor/core @capacitor/cli @capacitor/android
         
     - name: Create tsconfig.json
@@ -70,7 +74,7 @@ jobs:
         cd apk-project
         mkdir -p www
         
-    - name: Create complete medical system HTML
+    - name: Create complete medical system
       run: |
         cd apk-project
         cat > www/index.html << 'EOF'
@@ -864,22 +868,6 @@ jobs:
             </script>
         </body>
         </html>
-        EOF
-        
-    - name: Create Capacitor config with JavaScript
-      run: |
-        cd apk-project
-        cat > capacitor.config.js << 'EOF'
-        const config = {
-          appId: 'com.medico.prontuario',
-          appName: 'Prontuario Geriatrico',
-          webDir: 'www',
-          server: {
-            androidScheme: 'https'
-          }
-        };
-
-        module.exports = config;
         EOF
         
     - name: Add Android platform
