@@ -18,10 +18,10 @@ jobs:
       with:
         node-version: '20'
         
-    - name: Setup Java JDK 17
+    - name: Setup Java JDK 11
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '11'
         distribution: 'temurin'
         
     - name: Setup Android SDK
@@ -46,7 +46,7 @@ jobs:
     - name: Install Capacitor dependencies
       run: |
         cd apk-project
-        npm install @capacitor/core @capacitor/cli @capacitor/android
+        npm install @capacitor/core@5.7.0 @capacitor/cli@5.7.0 @capacitor/android@5.7.0
         
     - name: Create tsconfig.json
       run: |
@@ -896,17 +896,31 @@ jobs:
         cd apk-project
         npx cap sync
         
-    - name: Configure Gradle
+    - name: Configure Gradle and Android
       run: |
         cd apk-project/android
         echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
         echo "org.gradle.daemon=false" >> gradle.properties
+        echo "android.useAndroidX=true" >> gradle.properties
+        echo "android.enableJetifier=true" >> gradle.properties
         
-    - name: Build APK with detailed logging
+        # Configure app build.gradle for compatibility
+        cat >> app/build.gradle << 'EOF'
+        
+        android {
+            compileOptions {
+                sourceCompatibility JavaVersion.VERSION_11
+                targetCompatibility JavaVersion.VERSION_11
+            }
+        }
+        EOF
+        
+    - name: Clean and Build APK
       run: |
         cd apk-project/android
         chmod +x gradlew
-        ./gradlew assembleDebug --no-daemon --stacktrace --info
+        ./gradlew clean
+        ./gradlew assembleDebug --no-daemon --stacktrace
         
     - name: Verify APK creation
       run: |
